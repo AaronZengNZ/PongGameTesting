@@ -1,3 +1,4 @@
+
 using UnityEngine;
 
 public class AiPaddle : MonoBehaviour
@@ -23,7 +24,7 @@ public class AiPaddle : MonoBehaviour
 
     public void SpeedIncrease()
     {
-        speed += 1.5f;
+        speed += 3f;
     }
 
     public void Collison()
@@ -36,7 +37,7 @@ public class AiPaddle : MonoBehaviour
     {
         //get ball pos and set ballpos to ball's transform with yoffset
         ballPos = FindBall(GameObject.Find("Ball"));
-        if (Mathf.Round(ballPos.y * speed * 2f) == Mathf.Round(transform.position.y * speed * 2f))
+        if (Mathf.Round(ballPos.y / (speed * Time.deltaTime)) == Mathf.Round(transform.position.y / (speed * Time.deltaTime)))
         {
             transform.position = new Vector3(transform.position.x, ballPos.y, 0);
         }

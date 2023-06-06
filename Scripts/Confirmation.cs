@@ -87,6 +87,9 @@ public class Confirmation : MonoBehaviour
         yield return new WaitForSeconds(0.5f);
         //make machine learning toggle uninteractable
         MachineLearningToggle.interactable = false;
+        //find settings and call closeConfirmation
+        GameObject settings = GameObject.Find("SettingsManager");
+        settings.GetComponent<Settings>().CloseConfirmation();
         float t = 0f;
         float accel = 0.01f;
         while(t < 1f){

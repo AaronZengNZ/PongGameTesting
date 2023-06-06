@@ -21,7 +21,7 @@ public class Notification : MonoBehaviour
             notificationNum = notifications.Length;
             settingsButton.interactable = false;
             settings.enabled = false;
-            settingsText.text = "4D697373696E674E6F";
+            settingsText.text = "bWlzc2luZ05v";
             settingsRect.anchoredPosition = new Vector2(-850f, settingsRect.anchoredPosition.y);
             //find all mainmenu scripts, set hovered to false
             MainMenu[] mainMenus = FindObjectsOfType<MainMenu>();

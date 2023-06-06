@@ -19,11 +19,7 @@ public class Ball : MonoBehaviour
     float bouncesSinceLast = 0f;
     float timeSinceScore = 0f;
     public DialogText dt;
-    public string[] smugLoseTexts = new string[3];
     float smugness = 0f;
-    public string[] loseTexts = new string[3];
-    public string[] winTexts = new string[3];
-    public string[] winstreakTexts = new string[3];
     float winstreak = 0f;
     public string[] miscTexts;
     public GameObject settings;
@@ -65,15 +61,25 @@ public class Ball : MonoBehaviour
     }
 
     //on collision, alter y velocity to make ball bounce away from the object
-    private void OnCollisionEnter(Collision other)
+
+    //on trigger enter, same thing
+    private void OnTriggerEnter(Collider other)
     {
-        //if other has tag paddle, bounce from other
         if (other.gameObject.CompareTag("Paddle"))
         {
+            //if(rb.velocity.x > 0f){
+              //  if(other.transform.position.x < transform.position.x){
+                //    return;
+               // }
+            //}
+            //else{
+            //    if(other.transform.position.x > transform.position.x){
+            //        return;
+            //    }
+            //}
             bouncesSinceLast = 0f;
             BounceFromOther(other.transform);
         }
-        //if other has tag playergoal or aigoal
         else if (other.gameObject.CompareTag("PlayerGoal"))
         {
             Score("ai");
@@ -90,64 +96,15 @@ public class Ball : MonoBehaviour
         {
             scorePlayer++;
             winstreak++;
-            if (smugness >= 3f)
-            {
-                dt.TypeText(miscTexts[2]);
-            }
-            else if(winstreak >= 2){
-                if (winstreak > winstreakTexts.Length)
-                {
-                    dt.TypeText(winstreakTexts[winstreakTexts.Length - 1]);
-                }
-                else
-                {
-                    GameObject.Find("AiPaddle").GetComponent<AiPaddle>().SpeedIncrease();
-                    dt.TypeText(winstreakTexts[(int)winstreak - 2]);
-                    if (winstreak >= winstreakTexts.Length)
-                    {
-                        GameObject.Find("AiPaddle").GetComponent<AiPaddle>().AI = true;
-                    }
-                }
-            }
-            else if (Mathf.Abs(rb.velocity.y) > 12f)
-            {
-                dt.TypeText(miscTexts[3]);
-            }
-            else
-            {
-                int rand = UnityEngine.Random.Range(0, winTexts.Length);
-                dt.TypeText(winTexts[rand]);
-            }
+            dt.FindDialog(scorePlayer, scoreAi, winstreak, smugness, "player");
             smugness = 0;
         }
         else if (target == "ai")
         {
             scoreAi++;
             smugness++;
-            if (smugness >= 2f)
-            {
-                if (smugness > smugLoseTexts.Length)
-                {
-                    dt.TypeText(smugLoseTexts[smugLoseTexts.Length - 1]);
-                }
-                else
-                {
-                    dt.TypeText(smugLoseTexts[(int)smugness - 2]);
-                }
-            }
-            else if(winstreak >= 5){
-                GameObject.Find("AiPaddle").GetComponent<AiPaddle>().AI = false;
-                dt.TypeText(miscTexts[5]);
-            }
-            else if(winstreak >= 3){
-                dt.TypeText(miscTexts[4]);
-            }
-            else
-            {
-                int rand = UnityEngine.Random.Range(0, loseTexts.Length);
-                dt.TypeText(loseTexts[rand]);
-            }
-             winstreak = 0f;
+            dt.FindDialog(scorePlayer, scoreAi, winstreak, smugness, "ai");
+            winstreak = 0f;
         }
         transform.position = new Vector3(0, 0, 0);
         //revert velocity
@@ -180,21 +137,18 @@ public class Ball : MonoBehaviour
         if (accelerate == true)
         {
             speed = speed * 1.2f;
+            rb.velocity = new Vector3(-rb.velocity.x, rb.velocity.y, 0);
             //increase x velocity based on paddle hit
             if (other.name == "PlayerPaddle")
             {
-                rb.velocity = new Vector3(rb.velocity.x + speedUp, rb.velocity.y + dir.y * 6f * up, 0);
+                rb.velocity = new Vector3(rb.velocity.x + speedUp, dir.y * 6f * up, 0);
             }
             else if (other.name == "AiPaddle")
             {
-                rb.velocity = new Vector3(rb.velocity.x - speedUp, rb.velocity.y + dir.y * 6f * up, 0);
+                rb.velocity = new Vector3(rb.velocity.x - speedUp, dir.y * 6f * up, 0);
             }
             StartCoroutine(AccelerationDelay());
         }
-        //else{
-        //   rb.velocity = new Vector3(rb.velocity.x, rb.velocity.y + dir.y*speed*up, 0);
-        //
-        //if other name is aipaddle
         if (other.name == "AiPaddle")
         {
             other.GetComponent<AiPaddle>().Collison();

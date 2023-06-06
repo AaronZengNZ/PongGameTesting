@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -16,10 +17,18 @@ public class DialogText : MonoBehaviour
     public bool Test = false;
     public float[] order = new float[3];
     public string dialogMode = "none";
+    public string[] playerCatchingUp = new string[3];
+    public string[] aiCatchingUp = new string[3];
+    public string[] playerTies = new string[3];
+    public string[] aiTies = new string[3];
+    public string[] playerLeading = new string[3];
+    public string[] aiLeading = new string[3];
+    public string[] updateDialogs = new string[3];
+    public Update updater;
+    public float updateNum = 0f;
     // Start is called before the first frame update
     void Start()
     {
-        TypeText(placeHolderText);
     }
 
     // Update is called once per frame
@@ -29,6 +38,72 @@ public class DialogText : MonoBehaviour
         {
             Test = false;
             TypeText(placeHolderText);
+        }
+    }
+
+    public void FindDialog(float playerScore, float aiScore, float playerWinstreak, float aiWinstreak, string Paddle){
+        if(Paddle == "player"){
+            if(playerScore - aiScore >= 5f && updateNum == 0f){
+                updateNum++;
+                TypeText(updateDialogs[0]);
+                updater.UpdateGame(updateNum);
+            }
+            else if(playerScore > aiScore){
+                if(playerScore - aiScore > 3f){
+                    TypeText(playerLeading[0]);
+                }
+                else if(playerWinstreak < 3f){
+                    TypeText(playerLeading[1]);
+                }
+                else {
+                    TypeText(playerLeading[2]);
+                }
+            }
+            else if(playerScore < aiScore){
+                if(playerWinstreak < 3f){
+                    TypeText(playerCatchingUp[0]);
+                }
+                else {
+                    TypeText(playerCatchingUp[1]);
+                }
+            }
+            else{
+                if(playerWinstreak < 3f){
+                    TypeText(playerTies[0]);
+                }
+                else {
+                    TypeText(playerTies[1]);
+                }
+            }
+        }
+        if(Paddle == "ai"){
+            if(aiScore > playerScore){
+                if(aiScore - playerScore > 3f){
+                    TypeText(aiLeading[0]);
+                }
+                else if(aiWinstreak < 3f){
+                    TypeText(aiLeading[1]);
+                }
+                else {
+                    TypeText(aiLeading[2]);
+                }
+            }
+            else if(aiScore < playerScore){
+                if(aiWinstreak < 3f){
+                    TypeText(aiCatchingUp[0]);
+                }
+                else {
+                    TypeText(aiCatchingUp[1]);
+                }
+            }
+            else{
+                if(aiWinstreak < 3f){
+                    TypeText(aiTies[0]);
+                }
+                else {
+                    TypeText(aiTies[1]);
+                }
+            }
         }
     }
 
@@ -42,7 +117,7 @@ public class DialogText : MonoBehaviour
 
     IEnumerator TypeTextCoroutine(string text)
     {
-        if (dialogMode == "automatic")
+        if (true == true)
         {
             //shuffle text
             StartCoroutine(ShuffleText());
